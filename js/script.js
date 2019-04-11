@@ -6,6 +6,7 @@ const switcher = document.querySelector('#cbx'),
     modal = document.querySelector('.modal'),
 // Видео карточки
     videos = document.querySelectorAll('.videos__item');
+
 let player;
 
 // Выпадающее меню бургер (выезжает постепенно вниз и вверх по клику)
@@ -150,8 +151,7 @@ function start() {
             "playlistId": "PL3LQJkGQtzc4gsrFkm4MjWhTXhopsMgpv"
         })
     }).then(function(response) {
-        console.log(response.result);
-        
+        console.log(response.result);        
 
         response.result.items.forEach(item => {
             let card = document.createElement('a'); //создаем ссылку (тег а)
@@ -209,7 +209,10 @@ function search(target) {
         });
     }).then(function(response) {
         console.log(response.result);
-        videosWrapper.innerHTML = ``;
+        // videosWrapper.innerHTML = ``; //долго работает - лучше while
+        while (videosWrapper.firstChild) {
+            videosWrapper.removeChild(videosWrapper.firstChild);
+        };
 
         response.result.items.forEach(item => {
             let card = document.createElement('a'); //создаем ссылку (тег а)
@@ -250,6 +253,7 @@ document.querySelector('.search').addEventListener('submit', (e) => {
     gapi.load('client', () => {
         search(document.querySelector('.search > input').value);
     });
+    document.querySelector('.search > input').value = '';
 });
 
 
@@ -322,7 +326,7 @@ modal.addEventListener('click', (e) => {
         closeModal();
     };
 });
-document.addEventListener('keydown', function(evt) { if (evt.keyCode === 27) { closeModal(); } });
+document.addEventListener('keydown', function(evt) { if (evt.keyCode === 27) { closeModal(); }; });
 
 //работа с ютуб iframe api
 // обязательно нужен сервер
