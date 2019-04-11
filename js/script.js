@@ -89,46 +89,169 @@ switcher.addEventListener('change', () => {
 
 // Загрузка новых видео
 // скопированный код
-const data = [
-    ['img/thumb_3.webp', 'img/thumb_4.webp', 'img/thumb_5.webp'],
-    ['#3 Верстка на flexbox CSS | Блок преимущества и галерея | Марафон верстки | Артем Исламов',
-        '#2 Установка spikmi и работа с ветками на GitHub | Марафон верстки  Урок 2',
-        '#1 Верстка реального заказа landing Page | Марафон верстки | Артём Исламов'],
-    ['3,6 тыс. просмотров', '4,2 тыс. просмотров', '28 тыс. просмотров'],
-    ['X9SmcY3lM-U', '7BvHoh0BrMw', 'mC8JW_aG2EM']
-];
+// const data = [
+//     ['img/thumb_3.webp', 'img/thumb_4.webp', 'img/thumb_5.webp'],
+//     ['#3 Верстка на flexbox CSS | Блок преимущества и галерея | Марафон верстки | Артем Исламов',
+//         '#2 Установка spikmi и работа с ветками на GitHub | Марафон верстки  Урок 2',
+//         '#1 Верстка реального заказа landing Page | Марафон верстки | Артём Исламов'],
+//     ['3,6 тыс. просмотров', '4,2 тыс. просмотров', '28 тыс. просмотров'],
+//     ['X9SmcY3lM-U', '7BvHoh0BrMw', 'mC8JW_aG2EM']
+// ];
+
+// more.addEventListener('click', () => {
+//     const videosWrapper = document.querySelector('.videos__wrapper');
+//     more.remove(); //удаление кнопки
+
+//     //перебор массива data
+//     for (let i = 0; i < data[0].length; i++) { //т.к. по 3 элемента везде
+//         let card = document.createElement('a'); //создаем ссылку (тег а)
+//         card.classList.add('videos__item', 'videos__item-active'); //появление и удаление второго класса добавляет эффекты
+//         card.setAttribute('data-url', data[3][i]);
+//         card.innerHTML = `
+//             <img src="${data[0][i]}" alt="thumb">
+//             <div class="videos__item-descr">
+//                 ${data[1][i]}
+//             </div>
+//             <div class="videos__item-views">
+//                 ${data[2][i]}
+//             </div>
+//         `;
+
+//         //помещаем ссылку в конец другого элемента
+//         videosWrapper.appendChild(card);
+//         // устанавливаем 10 милисек задержки до исчезновения класса после его появления
+//         setTimeout(() => {
+//             card.classList.remove('videos__item-active');
+//         }, 10);
+
+//         // проверка ночного режима
+//         if (night === true) {
+//             card.querySelector('.videos__item-descr').style.color = '#fff';
+//             card.querySelector('.videos__item-views').style.color = '#fff';
+//         };
+//         // модальные окна по нажатию - день 2
+//         bindNewModal(card);
+//     };
+//     // обрезаем названия - функция дальше из второго дня
+//     sliceTitle('.videos__item-descr', 100);
+// });
+
+//День 3
+const videosWrapper = document.querySelector('.videos__wrapper');
+
+function start() {
+    gapi.client.init({
+        'apiKey': 'AIzaSyBcmBUbqOlRWVFaIbyeFYytXD9Z5ZdCvc0',
+        'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"]
+    }).then(function() {
+        return gapi.client.youtube.playlistItems.list({
+            "part": "snippet,contentDetails",
+            "maxResults": '6',
+            "playlistId": "PL3LQJkGQtzc4gsrFkm4MjWhTXhopsMgpv"
+        })
+    }).then(function(response) {
+        console.log(response.result);
+        
+
+        response.result.items.forEach(item => {
+            let card = document.createElement('a'); //создаем ссылку (тег а)
+            card.classList.add('videos__item', 'videos__item-active'); //появление и удаление второго класса добавляет эффекты
+            card.setAttribute('data-url', item.contentDetails.videoId);
+            card.innerHTML = `
+                <img src="${item.snippet.thumbnails.high.url}" alt="thumb">
+                <div class="videos__item-descr">
+                    ${item.snippet.title}
+                </div>
+                <div class="videos__item-views">
+                    2.7 тыс. просмотров
+                </div>
+            `;
+
+            //помещаем ссылку в конец другого элемента
+            videosWrapper.appendChild(card);
+            // устанавливаем 10 милисек задержки до исчезновения класса после его появления
+            setTimeout(() => {
+                card.classList.remove('videos__item-active');
+            }, 10);
+
+            // проверка ночного режима
+            if (night === true) {
+                card.querySelector('.videos__item-descr').style.color = '#fff';
+                card.querySelector('.videos__item-views').style.color = '#fff';
+            };
+            // модальные окна по нажатию - день 2
+        });
+
+        sliceTitle('.videos__item-descr', 100);
+        bindModal(document.querySelectorAll('.videos__item'));
+
+    }).catch( e => {
+        console.log(e);
+    });
+};
 
 more.addEventListener('click', () => {
-    const videosWrapper = document.querySelector('.videos__wrapper');
-    more.remove(); //удаление кнопки
-
-    //перебор массива data
-    for (let i = 0; i < data[0].length; i++) { //т.к. по 3 элемента везде
-        let card = document.createElement('a'); //создаем ссылку (тег а)
-        card.classList.add('videos__item', 'videos__item-active'); //появление и удаление второго класса добавляет эффекты
-        card.setAttribute('data-url', data[3][i]);
-        card.innerHTML = `
-            <img src="${data[0][i]}" alt="thumb">
-            <div class="videos__item-descr">
-                ${data[1][i]}
-            </div>
-            <div class="videos__item-views">
-                ${data[2][i]}
-            </div>
-        `;
-
-        //помещаем ссылку в конец другого элемента
-        videosWrapper.appendChild(card);
-        // устанавливаем 10 милисек задержки до исчезновения класса после его появления
-        setTimeout(() => {
-            card.classList.remove('videos__item-active');
-        }, 10);
-        // модальные окна по нажатию - день 2
-        bindNewModal(card);
-    };
-    // обрезаем названия - функция дальше из второго дня
-    sliceTitle('.videos__item-descr', 100);
+    more.remove();
+    gapi.load('client', start);
 });
+
+// поиск по ютуб
+function search(target) {
+    gapi.client.init({
+        'apiKey': 'AIzaSyBcmBUbqOlRWVFaIbyeFYytXD9Z5ZdCvc0',
+        'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"]
+    }).then(function() {
+        return gapi.client.youtube.search.list({
+            'maxResults': '10',
+            'part': 'snippet',
+            'q': `${target}`,
+            'type': ''
+        });
+    }).then(function(response) {
+        console.log(response.result);
+        videosWrapper.innerHTML = ``;
+
+        response.result.items.forEach(item => {
+            let card = document.createElement('a'); //создаем ссылку (тег а)
+            card.classList.add('videos__item', 'videos__item-active'); //появление и удаление второго класса добавляет эффекты
+            card.setAttribute('data-url', item.id.videoId);
+            card.innerHTML = `
+                <img src="${item.snippet.thumbnails.high.url}" alt="thumb">
+                <div class="videos__item-descr">
+                    ${item.snippet.title}
+                </div>
+                <div class="videos__item-views">
+                    2.7 тыс. просмотров
+                </div>
+            `;
+
+            //помещаем ссылку в конец другого элемента
+            videosWrapper.appendChild(card);
+            // устанавливаем 10 милисек задержки до исчезновения класса после его появления
+            setTimeout(() => {
+                card.classList.remove('videos__item-active');
+            }, 10);
+
+            // проверка ночного режима
+            if (night === true) {
+                card.querySelector('.videos__item-descr').style.color = '#fff';
+                card.querySelector('.videos__item-views').style.color = '#fff';
+            };
+            // модальные окна по нажатию - день 2
+        });
+
+        sliceTitle('.videos__item-descr', 100);
+        bindModal(document.querySelectorAll('.videos__item'));
+    });
+};
+
+document.querySelector('.search').addEventListener('submit', (e) => {
+    e.preventDefault();
+    gapi.load('client', () => {
+        search(document.querySelector('.search > input').value);
+    });
+});
+
 
 // День 2
 // Подрежем заголовки
@@ -147,7 +270,7 @@ function sliceTitle(selector, count) {
     });
 };
 
-sliceTitle('.videos__item-descr', 100);
+// sliceTitle('.videos__item-descr', 100);
 
 // пишем модальное окно: при нажатии на видео, будет открываться
 // окно modal, где будет плеер youTube
@@ -176,7 +299,7 @@ function bindModal(cards) {
     });
 };
 
-bindModal(videos);
+// bindModal(videos);
 
 // функция для привязки открытия модального окна к новосозданным карточкам
 
@@ -199,6 +322,7 @@ modal.addEventListener('click', (e) => {
         closeModal();
     };
 });
+document.addEventListener('keydown', function(evt) { if (evt.keyCode === 27) { closeModal(); } });
 
 //работа с ютуб iframe api
 // обязательно нужен сервер
